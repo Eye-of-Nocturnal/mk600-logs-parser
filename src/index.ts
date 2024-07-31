@@ -1,26 +1,32 @@
-console.log("Try npm run lint/fix!");
+import {confirm, select, Separator} from '@inquirer/prompts';
+import {exec} from 'shelljs';
 
-const longString = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ut aliquet diam.';
+main();
 
-const trailing = 'Semicolon'
+async function main() {
+  const mode = await select({
+    message: 'Select MK600 logger primary mode',
+    choices: [
+      {
+        name: 'store',
+        value: 'store',
+        description: 'store MK600 logs',
+      },
+      {
+        name: 'load',
+        value: 'load',
+        description: 'load MK600 logs',
+      },
+      new Separator(),
+      {
+        name: 'analyze',
+        value: 'analyze',
+        description: 'analyze MK600 logs',
+      },
+    ],
+  });
 
-			const why={am:'I tabbed?'};
+  const isLegacy = await confirm({message: 'Use legacy format?'});
 
-const iWish = "I didn't have a trailing space..."; 
-
-const sicilian = true;;
-
-const vizzini = (!!sicilian) ? !!!sicilian : sicilian;
-
-const re = /foo   bar/;
-
-export function doSomeStuff(withThis: string, andThat: string, andThose: string[]) {
-    //function on one line
-    if(!Boolean(andThose.length)) {return false;}
-    console.log(withThis);
-    console.log(andThat);
-    console.dir(andThose);
-    console.log(longString, trailing, why, iWish, vizzini, re);
-    return;
+  exec(`mk600logger ${mode} ${isLegacy ? '--legacy' : '--native'} --dir logs`);
 }
-// TODO: more examples
